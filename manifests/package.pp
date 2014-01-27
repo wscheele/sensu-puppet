@@ -24,10 +24,17 @@ class sensu::package {
 
   case $::kernel {
     'windows': {
+      $msi_version = latest_sensu_msi_version()
+      $msi_url = latest_sensu_msi_url()
+      $msi_file = "sensu-${msi_version}.msi"
       # Install MSI.
+      # download to C:\Windows\Downloaded Program Files
+      exec { "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy remotesigned Invoke-WebRequest ${msi_url} -OutFile to C:/Windows/Downloaded Program Files/${msi_file}":
+        creates => "C:/Windows/Downloaded Program Files/${msi_file}",
+      } ->
       package { 'sensu':
         ensure  => installed,
-        source => latest_sensu_msi_url(),
+        source => "C:/Windows/Downloaded Program Files/${msi_file}",
         provider => 'windows',
         install_options => '/quiet',
       } ->
