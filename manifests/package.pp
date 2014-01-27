@@ -118,6 +118,7 @@ class sensu::package {
       shell   => '/bin/false',
       comment => 'Sensu Monitoring Framework',
     }
+
     group { 'sensu':
       ensure  => 'present',
       system  => true,
