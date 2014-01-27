@@ -119,11 +119,13 @@ class sensu::package {
         # Need to add at least SYSTEM user to sensu group, otherwise puppet cannot complete the file setup.
         # Including Administrators so admin users can also control the sensu installation.
         exec { 'net localgroup sensu /ADD SYSTEM':
+          path => $::path,
           unless => 'net localgroup sensu /ADD SYSTEM',
           require => Group['sensu'],
           before => File['C:\etc\sensu'],
         } ->
         exec { 'net localgroup sensu /ADD Administrators':
+          path => $::path,
           unless => 'net localgroup sensu /ADD Administrators',
         }
       }
