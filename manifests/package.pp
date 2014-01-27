@@ -121,7 +121,7 @@ class sensu::package {
         exec { 'net localgroup sensu /ADD SYSTEM':
           unless => 'net localgroup sensu /ADD SYSTEM',
           require => Group['sensu'],
-          before => File['C:/etc/sensu'],
+          before => File['C:\etc\sensu'],
         } ->
         exec { 'net localgroup sensu /ADD Administrators':
           unless => 'net localgroup sensu /ADD Administrators',
