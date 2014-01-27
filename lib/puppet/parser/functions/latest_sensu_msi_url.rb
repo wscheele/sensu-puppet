@@ -1,5 +1,5 @@
 module Puppet::Parser::Functions
-  newfunction(:latest_sensu_msi_url) do
+  newfunction(:latest_sensu_msi_version) do
     require 'net/http'
     require 'rexml/document'
 
@@ -22,10 +22,14 @@ module Puppet::Parser::Functions
       version.split(/[\.-]/).map { |x| x.to_i }.zip([10e12, 10e8, 10e4, 1]).map{|i, j| i * j }.inject(:+)
     end
 
-    latest_version = versions.sort {|x, y|
+    versions.sort {|x, y|
       ordered_version_hash(x) <=> ordered_version_hash(y)
     }[-1]
-
+  end
+  newfunction(:latest_sensu_msi_url) do
+    url = 'http://repos.sensuapp.org/'
+    Puppet::Parser::Functions.function('latest_sensu_msi_version')
+    latest_version = function_latest_sensu_msi_version()
     "#{url}/msi/sensu-#{latest_version}.msi"
   end
 end

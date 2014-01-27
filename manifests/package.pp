@@ -24,10 +24,19 @@ class sensu::package {
 
   case $::kernel {
     'windows': {
+      case $sensu::version {
+        'latest', latest: {
+          $ensure = latest_sensu_msi_version()
+        }
+        default: {
+          $ensure = $sensu::version
+        }
+      }
       # Install MSI.
       package { 'sensu':
-        ensure  => $sensu::version,
+        ensure  => $ensure,
         source => latest_sensu_msi_url(),
+        provider => 'msi',
         install_options => '/quiet',
       } ->
       # Write out service definition xml.
