@@ -1,5 +1,5 @@
 module Puppet::Parser::Functions
-  newfunction(:latest_sensu_msi_version) do
+  newfunction(:latest_sensu_msi_version, :type => :rvalue) do
     require 'net/http'
     require 'rexml/document'
 
