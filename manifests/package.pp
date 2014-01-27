@@ -96,7 +96,7 @@ class sensu::package {
     require => Package['sensu'],
   }
 
-  if $sensu::manage_user and $::kernel != 'windows' {
+  if $sensu::manage_user {
     user { 'sensu':
       ensure  => 'present',
       system  => true,
