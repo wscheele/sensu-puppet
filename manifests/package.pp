@@ -29,8 +29,9 @@ class sensu::package {
       $msi_file = "sensu-${msi_version}.msi"
       # Install MSI.
       # download to C:\Windows\Downloaded Program Files
-      exec { "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy remotesigned Invoke-WebRequest ${msi_url} -OutFile C:/Windows/Downloaded Program Files/${msi_file}":
-        creates => "C:/Windows/Downloaded Program Files/${msi_file}",
+      exec { "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy remotesigned Invoke-WebRequest ${msi_url} -OutFile ${msi_file}":
+        cwd => 'C:\Windows\Temp',
+        creates => 'c:\opt\sensu',
       } ->
       package { 'sensu':
         ensure  => installed,
