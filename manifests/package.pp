@@ -86,7 +86,7 @@ class sensu::package {
     ensure  => directory,
     owner   => 'sensu',
     group   => 'sensu',
-    mode    => '0555',
+    mode    => '0775',
     purge   => $sensu::purge_config,
     recurse => true,
     force   => true,
@@ -95,7 +95,7 @@ class sensu::package {
 
   file { ["${sensu::config_dir}/plugins", "${sensu::config_dir}/handlers"]:
     ensure  => directory,
-    mode    => '0555',
+    mode    => '0775',
     owner   => 'sensu',
     group   => 'sensu',
     require => Package['sensu'],
