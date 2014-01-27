@@ -39,7 +39,7 @@ class sensu::package {
         provider => 'windows',
         install_options => '/quiet',
       } ->
-      file { 'C:\etc\sensu':
+      file { [ 'C:\etc', 'C:\etc\sensu' ]:
         ensure => directory,
       } ->
       # Write out service definition xml.
