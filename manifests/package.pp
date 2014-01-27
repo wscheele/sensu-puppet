@@ -99,11 +99,12 @@ class sensu::package {
   }
 
   if $sensu::manage_user {
+    $shell = $::kernel ? { 'windows' => nil, default => '/bin/false', }
     user { 'sensu':
       ensure  => 'present',
       system  => true,
       home    => '/opt/sensu',
-      shell   => '/bin/false',
+      shell   => $shell,
       comment => 'Sensu Monitoring Framework',
     }
 
