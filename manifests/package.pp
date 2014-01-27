@@ -45,7 +45,7 @@ class sensu::package {
 <!--   Windows service definition for Sensu -->
 <service>
   <id>sensu-client</id>
-  <name>Sensu Client</name>
+  <name>sensu-client</name>
   <description>This service runs a Sensu client</description>
   <executable>C:\opt\sensu\embedded\bin\ruby</executable>
   <arguments>C:\opt\sensu\embedded\bin\sensu-client -d C:\etc\sensu\conf.d -l C:\opt\sensu\sensu-client.log</arguments>
@@ -53,8 +53,9 @@ class sensu::package {
         ',
       } ->
       # Register service.
-      exec { 'C:\Windows\System32\sc.exe create sensu-client start= delayed-auto binPath= c:\opt\sensu\bin\sensu-client.exe DisplayName= "Sensu Client"':
+      exec { 'C:\Windows\System32\sc.exe create sensu-client start= delayed-auto binPath= c:\opt\sensu\bin\sensu-client.exe DisplayName= "sensu-client"':
         cwd => 'c:/opt/sensu/bin',
+        unless => 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy remotesigned Get-Service -DisplayName "sensu-client"',
       }
     }
     default: {
@@ -92,7 +93,7 @@ class sensu::package {
     require => Package['sensu'],
   }
 
-  if $sensu::manage_user {
+  if $sensu::manage_user and $::kernel != 'windows' {
     user { 'sensu':
       ensure  => 'present',
       system  => true,

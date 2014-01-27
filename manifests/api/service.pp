@@ -8,7 +8,7 @@ class sensu::api::service {
     fail("Use of private class ${name} by ${caller_module_name}")
   }
 
-  if $sensu::manage_services {
+  if $sensu::manage_services and $sensu::server {
 
     case $sensu::api {
       true: {
