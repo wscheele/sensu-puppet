@@ -39,7 +39,10 @@ class sensu::package {
         provider => 'windows',
         install_options => '/quiet',
       } ->
-      file { [ 'C:\etc', 'C:\etc\sensu' ]:
+      file { 'C:\etc':
+        ensure => directory,
+      } ->
+      file { 'C:\etc\sensu':
         ensure => directory,
         owner => 'sensu',
         group => 'sensu',
@@ -99,7 +102,6 @@ class sensu::package {
   }
 
   if $sensu::manage_user {
-    $shell = $::kernel ? { 'windows' => nil, default => '/bin/false', }
     case $::kernel {
       'windows': {
         # disable unsupported shell management on windows.
@@ -113,6 +115,16 @@ class sensu::package {
         # Puppet windows does not allow to create a user and group with the same name.
         File<| owner == 'sensu' |> {
           owner => 'sensu_svc',
+        } ->
+        # Need to add at least SYSTEM user to sensu group, otherwise puppet cannot complete the file setup.
+        # Including Administrators so admin users can also control the sensu installation.
+        exec { 'net localgroup sensu /ADD SYSTEM':
+          unless => 'net localgroup sensu /ADD SYSTEM',
+          require => Group['sensu'],
+          before => File['C:/etc/sensu'],
+        } ->
+        exec { 'net localgroup sensu /ADD Administrators':
+          unless => 'net localgroup sensu /ADD Administrators',
         }
       }
       default: {
@@ -120,7 +132,7 @@ class sensu::package {
           ensure  => 'present',
           system  => true,
           home    => '/opt/sensu',
-          shell   => $shell,
+          shell   => '/bin/false',
           comment => 'Sensu Monitoring Framework',
         }
       }
