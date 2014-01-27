@@ -100,12 +100,25 @@ class sensu::package {
 
   if $sensu::manage_user {
     $shell = $::kernel ? { 'windows' => nil, default => '/bin/false', }
-    user { 'sensu':
-      ensure  => 'present',
-      system  => true,
-      home    => '/opt/sensu',
-      shell   => $shell,
-      comment => 'Sensu Monitoring Framework',
+    case $::kernel {
+      'windows': {
+        # disable unsupported shell management on windows.
+        user { 'sensu':
+          ensure  => 'present',
+          system  => true,
+          home    => '/opt/sensu',
+          comment => 'Sensu Monitoring Framework',
+        }
+      }
+      default: {
+        user { 'sensu':
+          ensure  => 'present',
+          system  => true,
+          home    => '/opt/sensu',
+          shell   => $shell,
+          comment => 'Sensu Monitoring Framework',
+        }
+      }
     }
 
     group { 'sensu':
