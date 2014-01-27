@@ -205,6 +205,7 @@ class sensu (
   $use_embedded_ruby        = false,
   $rubyopt                  = '',
   $log_level                = 'info',
+  $config_dir = $::kernel ? { 'windows' => 'c:/etc/sensu', default => '/etc/sensu', }
 ){
 
   validate_bool($client, $server, $api, $dashboard, $install_repo, $purge_config, $safe_mode, $manage_services)
@@ -232,6 +233,6 @@ class sensu (
   class { 'sensu::dashboard::service': } ->
   anchor {'sensu::end': }
 
-  sensu::plugin { $plugins: install_path => '/etc/sensu/plugins'}
+  sensu::plugin { $plugins: install_path => "${config_dir}/plugins"}
 
 }

@@ -33,7 +33,7 @@ define sensu::filter (
     fail('attributes must be a hash')
   }
 
-  file { "/etc/sensu/conf.d/filters/${name}.json":
+  file { "${sensu::config_dir}/conf.d/filters/${name}.json":
     ensure  => $ensure,
     owner   => 'sensu',
     group   => 'sensu',

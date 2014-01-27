@@ -35,7 +35,7 @@
 #
 define sensu::plugin(
   $type         = 'file',
-  $install_path = '/etc/sensu/plugins',
+  $install_path = "${sensu::config_dir}/plugins",
   $purge        = true,
   $recurse      = true,
   $force        = true,

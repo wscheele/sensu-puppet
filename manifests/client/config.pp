@@ -14,7 +14,7 @@ class sensu::client::config {
     $ensure = 'present'
   }
 
-  file { '/etc/sensu/conf.d/client.json':
+  file { "${sensu::config_dir}/conf.d/client.json":
     ensure  => $ensure,
     owner   => 'sensu',
     group   => 'sensu',

@@ -15,7 +15,7 @@ class sensu::rabbitmq::config {
   }
 
   if $sensu::rabbitmq_ssl_cert_chain {
-    file { '/etc/sensu/ssl':
+    file { "${sensu::config_dir}/ssl":
       ensure  => directory,
       owner   => 'sensu',
       group   => 'sensu',
@@ -24,33 +24,33 @@ class sensu::rabbitmq::config {
     }
 
     if $sensu::rabbitmq_ssl_cert_chain =~ /^puppet:\/\// {
-      file { '/etc/sensu/ssl/cert.pem':
+      file { "${sensu::config_dir}/ssl/cert.pem":
         ensure  => present,
         source  => $sensu::rabbitmq_ssl_cert_chain,
         owner   => 'sensu',
         group   => 'sensu',
         mode    => '0444',
-        require => File['/etc/sensu/ssl'],
+        require => File["${sensu::config_dir}/ssl"],
         before  => Sensu_rabbitmq_config[$::fqdn],
       }
 
-      $ssl_cert_chain = '/etc/sensu/ssl/cert.pem'
+      $ssl_cert_chain = "${sensu::config_dir}/ssl/cert.pem"
     } else {
       $ssl_cert_chain = $sensu::rabbitmq_ssl_cert_chain
     }
 
     if $sensu::rabbitmq_ssl_private_key =~ /^puppet:\/\// {
-      file { '/etc/sensu/ssl/key.pem':
+      file { "${sensu::config_dir}/ssl/key.pem":
         ensure  => present,
         source  => $sensu::rabbitmq_ssl_private_key,
         owner   => 'sensu',
         group   => 'sensu',
         mode    => '0440',
-        require => File['/etc/sensu/ssl'],
+        require => File["${sensu::config_dir}/ssl"],
         before  => Sensu_rabbitmq_config[$::fqdn],
       }
 
-      $ssl_private_key = '/etc/sensu/ssl/key.pem'
+      $ssl_private_key = "${sensu::config_dir}/ssl/key.pem"
     } else {
       $ssl_private_key = $sensu::rabbitmq_ssl_private_key
     }
@@ -59,7 +59,7 @@ class sensu::rabbitmq::config {
     $ssl_private_key = undef
   }
 
-  file { '/etc/sensu/conf.d/rabbitmq.json':
+  file { "${sensu::config_dir}/conf.d/rabbitmq.json":
     ensure  => $ensure,
     owner   => 'sensu',
     group   => 'sensu',

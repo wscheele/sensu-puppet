@@ -66,7 +66,7 @@ define sensu::handler(
   $filters      = undef,
   # Used to install the handler
   $source       = undef,
-  $install_path = '/etc/sensu/handlers',
+  $install_path = "${sensu::config_dir}/handlers",
   # Handler specific config
   $config       = undef,
 ) {
@@ -120,7 +120,7 @@ define sensu::handler(
     $command_real = $command
   }
 
-  file { "/etc/sensu/conf.d/handlers/${name}.json":
+  file { "${sensu::config_dir}/conf.d/handlers/${name}.json":
     ensure  => $ensure,
     owner   => 'sensu',
     group   => 'sensu',
@@ -140,7 +140,7 @@ define sensu::handler(
     filters    => $filters,
     config     => $config,
     notify     => $notify_services,
-    require    => File['/etc/sensu/conf.d/handlers'],
+    require    => File["${sensu::config_dir}/conf.d/handlers"],
   }
 
 }

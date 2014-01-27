@@ -15,7 +15,7 @@ define sensu::subscription (
 
   validate_re($ensure, ['^present$', '^absent$'] )
 
-  file { "/etc/sensu/conf.d/subscription_${name}.json":
+  file { "${sensu::config_dir}/conf.d/subscription_${name}.json":
     ensure  => $ensure,
     owner   => 'sensu',
     group   => 'sensu',

@@ -22,20 +22,49 @@ class sensu::package {
 
   }
 
-  package { 'sensu':
-    ensure  => $sensu::version,
+  case $::kernel {
+    'windows': {
+      # Install MSI.
+      package { 'sensu':
+        ensure  => $sensu::version,
+        source => latest_sensu_msi_url(),
+        install_options => '/quiet',
+      } ->
+      # Write out service definition xml.
+      file { 'c:/opt/sensu/bin/sensu-client.xml':
+        content => trim('
+<!--   Windows service definition for Sensu -->
+<service>
+  <id>sensu-client</id>
+  <name>Sensu Client</name>
+  <description>This service runs a Sensu client</description>
+  <executable>C:\opt\sensu\embedded\bin\ruby</executable>
+  <arguments>C:\opt\sensu\embedded\bin\sensu-client -d C:\etc\sensu\conf.d -l C:\opt\sensu\sensu-client.log</arguments>
+</service>
+        '),
+      } ->
+      # Register service.
+      exec { 'C:\Windows\System32\sc.exe create sensu-client start= delayed-auto binPath= c:\opt\sensu\bin\sensu-client.exe DisplayName= "Sensu Client"':
+        cwd => 'c:/opt/sensu/bin',
+      }
+    }
+    default: {
+      package { 'sensu':
+        ensure  => $sensu::version,
+      }
+
+      file { '/etc/default/sensu':
+        ensure  => file,
+        content => template("${module_name}/sensu.erb"),
+        owner   => '0',
+        group   => '0',
+        mode    => '0444',
+        require => Package['sensu'],
+      }
+    }
   }
 
-  file { '/etc/default/sensu':
-    ensure  => file,
-    content => template("${module_name}/sensu.erb"),
-    owner   => '0',
-    group   => '0',
-    mode    => '0444',
-    require => Package['sensu'],
-  }
-
-  file { [ '/etc/sensu/conf.d', '/etc/sensu/conf.d/handlers', '/etc/sensu/conf.d/checks', '/etc/sensu/conf.d/filters' ]:
+  file { [ "${sensu::config_dir}/conf.d", "${sensu::config_dir}/conf.d/handlers", "${sensu::config_dir}/conf.d/checks", "${sensu::config_dir}/conf.d/filters" ]:
     ensure  => directory,
     owner   => 'sensu',
     group   => 'sensu',
@@ -46,7 +75,7 @@ class sensu::package {
     require => Package['sensu'],
   }
 
-  file { ['/etc/sensu/plugins', '/etc/sensu/handlers']:
+  file { ["${sensu::config_dir}/plugins", "${sensu::config_dir}/handlers"]:
     ensure  => directory,
     mode    => '0555',
     owner   => 'sensu',
@@ -69,5 +98,5 @@ class sensu::package {
     }
   }
 
-  file { '/etc/sensu/config.json': ensure => absent }
+  file { "${sensu::config_dir}/config.json": ensure => absent }
 }

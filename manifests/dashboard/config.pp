@@ -14,7 +14,7 @@ class sensu::dashboard::config {
     $ensure = 'present'
   }
 
-  file { '/etc/sensu/conf.d/dashboard.json':
+  file { "${sensu::config_dir}/conf.d/dashboard.json":
     ensure  => $ensure,
     owner   => 'sensu',
     group   => 'sensu',
