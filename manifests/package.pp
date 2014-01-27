@@ -39,6 +39,9 @@ class sensu::package {
         provider => 'windows',
         install_options => '/quiet',
       } ->
+      file { 'C:\etc\sensu':
+        ensure => directory,
+      } ->
       # Write out service definition xml.
       file { 'c:/opt/sensu/bin/sensu-client.xml':
         content => '
@@ -55,10 +58,7 @@ class sensu::package {
       # Register service.
       exec { 'C:\Windows\System32\sc.exe create sensu-client start= delayed-auto binPath= c:\opt\sensu\bin\sensu-client.exe DisplayName= "Sensu Client"':
         cwd => 'c:/opt/sensu/bin',
-        unless => 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy remotesigned Get-Service -DisplayName "Sensu Client"',
-      } ->
-      file { 'C:\etc\sensu':
-        ensure => directory,
+        unless => 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy remotesigned Get-Service -Name sensu-client',
       }
     }
     default: {
