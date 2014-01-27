@@ -58,7 +58,7 @@ class sensu::package {
         ',
       } ->
       # Register service.
-      exec { 'C:\Windows\System32\sc.exe create sensu-client start= delayed-auto binPath= c:\opt\sensu\bin\sensu-client.exe DisplayName= "Sensu Client"':
+      exec { "C:\Windows\System32\sc.exe create sensu-client obj= sensu_svc password= ${sensu::windows_svc_password} start= delayed-auto binPath= c:\opt\sensu\bin\sensu-client.exe DisplayName= 'Sensu Client'":
         cwd => 'c:/opt/sensu/bin',
         unless => 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy remotesigned Get-Service -Name sensu-client',
       }
@@ -103,11 +103,16 @@ class sensu::package {
     case $::kernel {
       'windows': {
         # disable unsupported shell management on windows.
-        user { 'sensu':
-          ensure  => 'present',
-          system  => true,
-          home    => '/opt/sensu',
-          comment => 'Sensu Monitoring Framework',
+        user { 'sensu_svc':
+          ensure   => 'present',
+          password => $sensu::windows_svc_password,
+          system   => true,
+          home     => '/opt/sensu',
+          comment  => 'Sensu Monitoring Framework',
+        }
+        # Puppet windows does not allow to create a user and group with the same name.
+        File<| owner == 'sensu' |> {
+          owner => 'sensu_svc',
         }
       }
       default: {
