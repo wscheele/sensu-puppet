@@ -41,7 +41,7 @@ class sensu::package {
       } ->
       # Write out service definition xml.
       file { 'c:/opt/sensu/bin/sensu-client.xml':
-        content => trim('
+        content => '
 <!--   Windows service definition for Sensu -->
 <service>
   <id>sensu-client</id>
@@ -50,7 +50,7 @@ class sensu::package {
   <executable>C:\opt\sensu\embedded\bin\ruby</executable>
   <arguments>C:\opt\sensu\embedded\bin\sensu-client -d C:\etc\sensu\conf.d -l C:\opt\sensu\sensu-client.log</arguments>
 </service>
-        '),
+        ',
       } ->
       # Register service.
       exec { 'C:\Windows\System32\sc.exe create sensu-client start= delayed-auto binPath= c:\opt\sensu\bin\sensu-client.exe DisplayName= "Sensu Client"':
