@@ -33,12 +33,6 @@ class sensu::package {
         cwd => 'C:\Windows\Temp',
         creates => 'c:\opt\sensu',
       } ->
-      package { 'sensu':
-        ensure  => installed,
-        source => "C:\\Windows\\Temp\\${msi_file}",
-        provider => 'windows',
-        install_options => '/quiet',
-      } ->
       file { 'C:\etc':
         ensure => directory,
       } ->
@@ -46,6 +40,12 @@ class sensu::package {
         ensure => directory,
         owner => 'sensu',
         group => 'sensu',
+      } ->
+      package { 'sensu':
+        ensure  => installed,
+        source => "C:\\Windows\\Temp\\${msi_file}",
+        provider => 'windows',
+        install_options => '/quiet',
       } ->
       # Write out service definition xml.
       file { 'c:/opt/sensu/bin/sensu-client.xml':
@@ -115,18 +115,18 @@ class sensu::package {
         # Puppet windows does not allow to create a user and group with the same name.
         File<| owner == 'sensu' |> {
           owner => 'sensu_svc',
-        } ->
+        }
         # Need to add at least SYSTEM user to sensu group, otherwise puppet cannot complete the file setup.
         # Including Administrators so admin users can also control the sensu installation.
         exec { 'net localgroup sensu /ADD SYSTEM':
           path => $::path,
-          unless => 'net localgroup sensu /ADD SYSTEM',
+          unless => 'cmd.exe /c net localgroup sensu | findstr SYSTEM',
           require => Group['sensu'],
           before => File['C:\etc\sensu'],
         } ->
         exec { 'net localgroup sensu /ADD Administrators':
           path => $::path,
-          unless => 'net localgroup sensu /ADD Administrators',
+          unless => 'cmd.exe /c net localgroup sensu | findstr SYSTEM',
         }
       }
       default: {
