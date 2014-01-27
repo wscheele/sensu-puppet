@@ -41,6 +41,8 @@ class sensu::package {
       } ->
       file { [ 'C:\etc', 'C:\etc\sensu' ]:
         ensure => directory,
+        owner => 'sensu',
+        group => 'sensu',
       } ->
       # Write out service definition xml.
       file { 'c:/opt/sensu/bin/sensu-client.xml':
