@@ -56,6 +56,9 @@ class sensu::package {
       exec { 'C:\Windows\System32\sc.exe create sensu-client start= delayed-auto binPath= c:\opt\sensu\bin\sensu-client.exe DisplayName= "Sensu Client"':
         cwd => 'c:/opt/sensu/bin',
         unless => 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy remotesigned Get-Service -DisplayName "Sensu Client"',
+      } ->
+      file { 'C:\etc\sensu':
+        ensure => directory,
       }
     }
     default: {
