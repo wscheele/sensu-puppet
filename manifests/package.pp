@@ -35,7 +35,7 @@ class sensu::package {
       } ->
       package { 'sensu':
         ensure  => installed,
-        source => "C:/Windows/Temp/${msi_file}",
+        source => "C:\\Windows\\Temp\\${msi_file}",
         provider => 'windows',
         install_options => '/quiet',
       } ->
