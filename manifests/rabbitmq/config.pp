@@ -63,7 +63,7 @@ class sensu::rabbitmq::config {
     ensure  => $ensure,
     owner   => 'sensu',
     group   => 'sensu',
-    mode    => '0440',
+    mode    => '0770',
     before  => Sensu_rabbitmq_config[$::fqdn],
   }
 
