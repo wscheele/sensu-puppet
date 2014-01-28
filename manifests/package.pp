@@ -38,6 +38,7 @@ class sensu::package {
       } ->
       file { 'C:\etc\sensu':
         ensure => directory,
+        mode => '0775',
         owner => 'sensu',
         group => 'sensu',
       } ->
