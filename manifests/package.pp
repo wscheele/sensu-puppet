@@ -106,18 +106,6 @@ class sensu::package {
   if $sensu::manage_user {
     case $::kernel {
       'windows': {
-        # disable unsupported shell management on windows.
-        user { 'sensu_svc':
-          ensure   => 'present',
-          password => $sensu::windows_svc_password,
-          system   => true,
-          home     => '/opt/sensu',
-          comment  => 'Sensu Monitoring Framework',
-        }
-        # Puppet windows does not allow to create a user and group with the same name.
-        File<| owner == 'sensu' |> {
-          owner => 'sensu_svc',
-        }
         # Need to add at least SYSTEM user to sensu group, otherwise puppet cannot complete the file setup.
         # Including Administrators so admin users can also control the sensu installation.
         exec { 'cmd.exe /c net localgroup sensu /ADD SYSTEM':
