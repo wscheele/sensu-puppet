@@ -116,7 +116,7 @@ class sensu::package {
         } ->
         exec { 'cmd.exe /c net localgroup sensu /ADD Administrators':
           path => $::path,
-          unless => 'cmd.exe /c net localgroup sensu | findstr SYSTEM',
+          unless => 'cmd.exe /c net localgroup sensu | findstr Administrators',
         }
       }
       default: {
