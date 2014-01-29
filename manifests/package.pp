@@ -29,6 +29,11 @@ class sensu::package {
       $msi_file = "sensu-${msi_version}.msi"
       # Install MSI.
       # download to C:\Windows\Downloaded Program Files
+      File<| owner == 'sensu' |> {
+        owner => 'Administrators',
+        group => 'Administrators',
+        mode => nil,
+      }
       exec { "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy remotesigned Invoke-WebRequest ${msi_url} -OutFile ${msi_file}":
         cwd => 'C:\Windows\Temp',
         creates => 'c:\opt\sensu',
@@ -103,33 +108,14 @@ class sensu::package {
     require => Package['sensu'],
   }
 
-  if $sensu::manage_user {
-    case $::kernel {
-      'windows': {
-        # Need to add at least SYSTEM user to sensu group, otherwise puppet cannot complete the file setup.
-        # Including Administrators so admin users can also control the sensu installation.
-        exec { 'cmd.exe /c net localgroup sensu /ADD SYSTEM':
-          path => $::path,
-          unless => 'cmd.exe /c net localgroup sensu | findstr SYSTEM',
-          require => Group['sensu'],
-          before => File['C:\etc\sensu'],
-        } ->
-        exec { 'cmd.exe /c net localgroup sensu /ADD Administrators':
-          path => $::path,
-          unless => 'cmd.exe /c net localgroup sensu | findstr Administrators',
-        }
-      }
-      default: {
-        user { 'sensu':
-          ensure  => 'present',
-          system  => true,
-          home    => '/opt/sensu',
-          shell   => '/bin/false',
-          comment => 'Sensu Monitoring Framework',
-        }
-      }
+  if $sensu::manage_user and $::kernel != 'windows' {
+    user { 'sensu':
+      ensure  => 'present',
+      system  => true,
+      home    => '/opt/sensu',
+      shell   => '/bin/false',
+      comment => 'Sensu Monitoring Framework',
     }
-
     group { 'sensu':
       ensure  => 'present',
       system  => true,
