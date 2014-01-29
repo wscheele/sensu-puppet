@@ -32,6 +32,7 @@ class sensu::package {
       File<| owner == 'sensu' |> {
         owner => 'Administrators',
         group => 'Administrators',
+        mode => '0770',
       }
       exec { "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy remotesigned Invoke-WebRequest ${msi_url} -OutFile ${msi_file}":
         cwd => 'C:\Windows\Temp',
