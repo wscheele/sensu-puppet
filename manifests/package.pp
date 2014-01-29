@@ -62,7 +62,7 @@ class sensu::package {
         ',
       } ->
       # Register service.
-      exec { "C:\\Windows\\System32\\sc.exe create sensu-client obj= sensu_svc password= ${sensu::windows_svc_password} start= delayed-auto binPath= c:\\opt\\sensu\\bin\\sensu-client.exe DisplayName= 'Sensu Client'":
+      exec { "cmd.exe /c C:\\Windows\\System32\\sc.exe create sensu-client obj= sensu_svc password= ${sensu::windows_svc_password} start= delayed-auto binPath= c:\\opt\\sensu\\bin\\sensu-client.exe DisplayName= 'Sensu Client'":
         cwd => 'c:/opt/sensu/bin',
         unless => 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy remotesigned Get-Service -Name sensu-client',
       }
@@ -119,13 +119,13 @@ class sensu::package {
         }
         # Need to add at least SYSTEM user to sensu group, otherwise puppet cannot complete the file setup.
         # Including Administrators so admin users can also control the sensu installation.
-        exec { 'net localgroup sensu /ADD SYSTEM':
+        exec { 'cmd.exe /c net localgroup sensu /ADD SYSTEM':
           path => $::path,
           unless => 'cmd.exe /c net localgroup sensu | findstr SYSTEM',
           require => Group['sensu'],
           before => File['C:\etc\sensu'],
         } ->
-        exec { 'net localgroup sensu /ADD Administrators':
+        exec { 'cmd.exe /c net localgroup sensu /ADD Administrators':
           path => $::path,
           unless => 'cmd.exe /c net localgroup sensu | findstr SYSTEM',
         }
