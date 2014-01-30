@@ -47,8 +47,9 @@ class sensu::package {
         owner => 'sensu',
         group => 'sensu',
       } ->
-      package { 'sensu':
+      package { 'Sensu':
         ensure  => installed,
+        alias => 'sensu',
         source => "C:\\Windows\\Temp\\${msi_file}",
         provider => 'windows',
         install_options => '/quiet',
