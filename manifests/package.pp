@@ -37,6 +37,7 @@ class sensu::package {
       exec { "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy remotesigned Invoke-WebRequest ${msi_url} -OutFile ${msi_file}":
         cwd => 'C:\Windows\Temp',
         creates => 'c:\opt\sensu',
+        timeout => 900,
       } ->
       file { 'C:\etc':
         ensure => directory,
