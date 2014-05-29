@@ -90,9 +90,21 @@ define sensu::check(
     fail("sensu::check{${name}}: timeout must be a numeric (got: ${timeout})")
   }
 
+  if $client {
+    if $server {
+      $notify = [ Class['sensu::client::service'], Class['sensu::server::service'] ]
+    } else {
+      $notify = Class['sensu::client::service']
+    }
+  } elsif $server {
+    $notify = Class['sensu::client::service']
+  } else {
+    $notify = []
+  }
+
   $check_name = regsubst(regsubst($name, ' ', '_', 'G'), '[\(\)]', '', 'G')
 
-  file { "${sensu::config_dir}/conf.d/checks/${check_name}.json":
+  file { "/etc/sensu/conf.d/checks/${check_name}.json":
     ensure  => $ensure,
     owner   => 'sensu',
     group   => 'sensu',
@@ -115,8 +127,8 @@ define sensu::check(
     handle              => $handle,
     publish             => $publish,
     custom              => $custom,
-    require             => File["${sensu::config_dir}/conf.d/checks"],
-    notify              => [ Class['sensu::client::service'], Class['sensu::server::service'] ],
+    require             => File['/etc/sensu/conf.d/checks'],
+    notify              => $notify,
   }
 
 }
